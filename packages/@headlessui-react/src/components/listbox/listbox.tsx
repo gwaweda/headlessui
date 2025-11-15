@@ -109,6 +109,9 @@ let ListboxDataContext = createContext<{
   }>
 
   listRef: MutableRefObject<Map<string, HTMLElement | null>>
+
+  autoScrollToActiveOption: boolean // [수정]
+  smoothOptionScroll: boolean // [수정]
 } | null>(null)
 ListboxDataContext.displayName = 'ListboxDataContext'
 
@@ -152,6 +155,8 @@ export type ListboxProps<
     form?: string
     name?: string
     multiple?: boolean
+    autoScrollToActiveOption?: boolean // [수정]
+    smoothOptionScroll?: boolean // [수정]
 
     __demoMode?: boolean
   }
@@ -177,6 +182,8 @@ function ListboxFn<
     horizontal = false,
     multiple = false,
     __demoMode = false,
+    autoScrollToActiveOption = true, // [수정]
+    smoothOptionScroll = false, // [수정]
     ...theirProps
   } = props
 
@@ -221,6 +228,8 @@ function ListboxFn<
     isSelected,
     optionsPropsRef,
     listRef,
+    autoScrollToActiveOption, // [수정]
+    smoothOptionScroll, // [수정]
   })
 
   useIsoMorphicEffect(() => {
@@ -850,12 +859,24 @@ function OptionFn<
   let shouldScrollIntoView = useSlice(machine, (state) =>
     machine.selectors.shouldScrollIntoView(state, id)
   )
+
+  // [수정] autoScrollToActiveOption, smoothOptionScroll 반영
   useIsoMorphicEffect(() => {
     if (!shouldScrollIntoView) return
+    if (!data.autoScrollToActiveOption) return
+
     return disposables().requestAnimationFrame(() => {
-      internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
+      internalOptionRef.current?.scrollIntoView?.({
+        block: 'nearest',
+        behavior: data.smoothOptionScroll ? 'smooth' : 'auto',
+      })
     })
-  }, [shouldScrollIntoView, internalOptionRef])
+  }, [
+    shouldScrollIntoView,
+    internalOptionRef,
+    data.autoScrollToActiveOption,
+    data.smoothOptionScroll,
+  ])
 
   useIsoMorphicEffect(() => {
     if (usedInSelectedOption) return

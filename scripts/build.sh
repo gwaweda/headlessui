@@ -29,7 +29,7 @@ resolverOptions=()
 resolverOptions+=($SRC)
 resolverOptions+=('/**/*.{ts,tsx}')
 resolverOptions+=('--ignore=.test.,__mocks__')
-INPUT_FILES=$($resolver ${resolverOptions[@]})
+INPUT_FILES=$("$resolver" "${resolverOptions[@]}")
 
 NODE_ENV=production  npx esbuild $INPUT_FILES --format=esm --outdir=$DST               --outbase=$SRC --minify --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="false" ${sharedOptions[@]} &
 NODE_ENV=production  npx esbuild $input       --format=esm --outfile=$DST/$name.esm.js --outbase=$SRC --minify --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="false" ${sharedOptions[@]} &

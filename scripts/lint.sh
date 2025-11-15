@@ -1,35 +1,37 @@
 #!/usr/bin/env bash
 set -e
 
-ROOT_DIR="$(git rev-parse --show-toplevel)/"
-TARGET_DIR="$(pwd)"
-RELATIVE_TARGET_DIR="${TARGET_DIR/$ROOT_DIR/}"
-
-# INFO: This script is always run from the root of the repository. If we execute this script from a
-# package then the filters (in this case a path to $RELATIVE_TARGET_DIR) will be applied.
-
-pushd $ROOT_DIR > /dev/null
+# 항상 레포 루트 기준에서 실행
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$ROOT_DIR"
 
 prettierArgs=()
 
-if ! [ -z "$CI" ]; then
+# CI 환경이면 --check, 아니면 --write
+if [ -n "$CI" ]; then
   prettierArgs+=("--check")
 else
   prettierArgs+=("--write")
 fi
 
-# Add default arguments
-prettierArgs+=('--ignore-unknown')
+# 기본 옵션
+prettierArgs+=("--ignore-unknown")
 
-# Passthrough arguments and flags
-prettierArgs+=($@)
-
-# Ensure that a path is passed, otherwise default to the current directory
-if [ -z "$@" ]; then
-  prettierArgs+=("$RELATIVE_TARGET_DIR")
+# lint-staged가 넘겨준 파일 경로들을 처리
+if [ "$#" -gt 0 ]; then
+  for arg in "$@"; do
+    # 절대 경로로 넘어온 경우 루트 기준 상대 경로로 변환
+    if [[ "$arg" == "$ROOT_DIR"* ]]; then
+      rel="${arg#"$ROOT_DIR"/}"
+      prettierArgs+=("$rel")
+    else
+      prettierArgs+=("$arg")
+    fi
+  done
+else
+  # 인자가 없으면 레포 전체 대상
+  prettierArgs+=(".")
 fi
 
-# Execute
+# 실행
 npx prettier "${prettierArgs[@]}"
-
-popd > /dev/null

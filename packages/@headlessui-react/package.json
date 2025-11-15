@@ -33,10 +33,10 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "../../scripts/build.sh --external:react --external:react-dom --external:use-sync-external-store",
-    "watch": "../../scripts/watch.sh --external:react --external:react-dom --external:use-sync-external-store",
-    "test": "../../scripts/test.sh",
-    "lint": "../../scripts/lint.sh",
+    "build": "bash ../../scripts/build.sh --external:react --external:react-dom --external:use-sync-external-store",
+    "watch": "bash ../../scripts/watch.sh --external:react --external:react-dom --external:use-sync-external-store",
+    "test": "bash ../../scripts/test.sh",
+    "lint": "bash ../../scripts/lint.sh",
     "lint-types": "npm run attw -P --workspaces --if-present",
     "playground": "npm run dev --workspace=playground-react",
     "clean": "rimraf ./dist"
