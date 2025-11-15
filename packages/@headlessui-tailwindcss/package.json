@@ -33,7 +33,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "../../scripts/build.sh --external:tailwindcss && node ./scripts/fix-types.cjs",
+    "build": "bash ../../scripts/build.sh --external:tailwindcss && node ./scripts/fix-types.cjs",
     "watch": "../../scripts/watch.sh --external:tailwindcss",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
